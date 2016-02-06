@@ -12,7 +12,7 @@ $.widget("ui.checkboxselect", {
 	dropdownButton: $("<i class='cbs-button fa fa-caret-down'></i>"),
 	dropdownContainer: $("<div class='cbs-dropdown-container'></div>"),
 	toolContainer: $("<div class='cbs-tool-container cbs-container'></div>"),
-	checkAllButton: $("<i class='cbs-button fa fa-check'></i>"),
+	checkAllButton: $("<i class='cbs-button fa fa-square-o'></i>"),
 	searchContainer: $("<div class='cbs-search-container cbs-container'></div>"),
 	searchIcon: $("<i class='cbs-button fa fa-search'></i>"),
 	searchInput: $("<input class='cbs-input'></input>"),
@@ -35,19 +35,32 @@ $.widget("ui.checkboxselect", {
       if (!this.element.prop("multiple"))
          this.element.prop("multiple", true);
       
-//      this.element.hide();
+      this.element.hide();
 
+		//container
 		this.container.append(this.textContainer);
+		
+		//selected texts and dropdown control
 		this.textContainer.append(this.texts);
 		this.texts.after(this.dropdownButton);
+		
 		this.textContainer.after(this.dropdownContainer);
 		this.dropdownContainer.append(this.toolContainer);
+		
+		//check/uncheck all, search and order toolbar
+		//check/uncheck
 		this.toolContainer.append(this.checkAllButton);
+		
+		//search
 		this.checkAllButton.after(this.searchContainer);
 		this.searchContainer.append(this.searchIcon);
 		this.searchIcon.after(this.searchInput);
 		this.searchInput.after(this.searchCancel);				  
+		
+		//order
 		this.searchContainer.after(this.orderButton);
+
+		//list items and it's checkboxes
 		this.toolContainer.after(this.listContainer);
 		this.listContainer.append(this.list);
 		
@@ -59,12 +72,19 @@ $.widget("ui.checkboxselect", {
 			else
 				_this.dropdownContainer.show();
 		});
-//		this.selectbutton.bind("click", function() {
-//			_this.ulListItems.children().prop("checked", $(this).prop("checked"));
-//			_this.optionItems.prop("selected", $(this).prop("checked"));
-//			_this._setLabel();
-//		});
-//
+		
+		this.checkAllButton.bind("click", function() {
+			var __this = $(this);
+			_this._toggleCheck(__this);
+			_this.list.children().each(function() { 
+				var _icon = $(this).children();
+				if (_icon.attr("class") !== __this.attr("class"))
+					_this._toggleCheck(_icon); 
+			});
+			_this.element.children().prop("selected", __this.is(".fa-check"));
+			_this._setLabel();
+		});
+
 		this.setData(this.options.data);
 		      
    },
@@ -81,45 +101,54 @@ $.widget("ui.checkboxselect", {
 	},
 	
    _destroy: function() {
+		
       this.element.show();
    },
 	
-	_updateLabel: function(event) {
-		var target = $(event.target),
-			icon = null,
-			item = null;
- 
-		if (target.context.nodeName === "LI") {
-			icon = $(target.children()[0]);
-//			icon.prop("checked", !input.prop("checked")); 
-			item = $(this.items).filter("[value="+target.prop("cbs-value")+"]");
-		}
-		else
-			item = $(this.items).filter("[value="+target.val()+"]");
-		
-		item.prop("selected", !item.prop("selected"));
-		this._setLabel();
-	},
-	
 	_setLabel: function() {
 		var selectedText = "";
-		this.items.filter(":selected").each(function(i,o){ selectedText += $(o).text() + ","; });
+		this.element.children().filter(":selected").each(function(i,o){ selectedText += $(o).text() + ","; });
 		this.texts.text(selectedText.endsWith(",") ? selectedText.substring(0, selectedText.length - 1) : selectedText);
+	},
+	
+	_toggleCheck: function(check) {
+		if (check.is(".fa-square-o"))
+			check.removeClass("fa-square-o")
+				  .addClass("fa-check");
+		else
+			check.removeClass("fa-check")
+				  .addClass("fa-square-o");
 	},
 	
 	_bind: function(listItems) {
 		var _this = this;
+		
 		listItems.bind("mouseenter mouseleave", function(){ 
          $(this).toggleClass("cbs-state-highlight"); 
       });
-      listItems.bind("click", function(event){ 
+      
+		listItems.bind("click", function(event){ 
+			//prevent from child icon element's click
 			if (event.target === this) {
-				_this._updateLabel(event);
+				//just call child icon click, it is alredy doing
+				$(this).children().trigger("click");
 				_this.dropdownContainer.hide();
 			}
+			
       });
-		listItems.children("input").bind("click", function(event){
-			_this._updateLabel(event);
+		
+		listItems.children("i").bind("click", function(event){
+			var __this = $(this),
+				value = this.parentElement.attributes["cbs-value"].value;
+			
+			_this._toggleCheck(__this);
+			
+			_this.element
+					  .children()
+					  .filter("[value="+value+"]")
+					  .prop("selected", __this.is(".fa-check"));
+			
+			_this._setLabel();
 		}); 
 	},
 	
@@ -132,8 +161,6 @@ $.widget("ui.checkboxselect", {
 	 */
 	addOption: function(option) {
 		var _option = this._addOption(option);
-		
-		this.items = this.element.children("option");
       this.list.append("<li class='cbs-list-item' cbs-value='"+_option.value+"'><i class='cbs-button fa "+(_option.selected?"fa-check":"fa-square-o")+"'></i>"+_option.text+"</li>");
 		this._bind(this.list.children().filter("[cbs-value='"+_option.value+"']"));
 		this._setLabel();
@@ -164,19 +191,18 @@ $.widget("ui.checkboxselect", {
       });
       
       this._bind(this.list.children());
+		this._setLabel();
       
 	},
 	
 	removeOption: function(value) {
 		this.element.children().filter("[value="+value+"]").remove();
-		this.items = this.element.children("option");
 		this.list.children().filter("[cbs-value='"+value+"']").remove();
 		this._setLabel();
 	},
 	
 	clear: function() {
 		this.element.children().remove();
-		this.items = this.element.children();
 		this.list.children().remove();
 		this.texts.text("");
 	},
@@ -187,7 +213,13 @@ $.widget("ui.checkboxselect", {
 	
 	getValue: function() {
 		var value = [];
-		this.items.filter(":selected").each(function(i,o){ value.push(o.value)});
+		this.element.children().filter(":selected").each(function(i,o){ value.push(o.value)});
+		return value;
+	},
+	
+	getSelectedData: function() {
+		var value = [];
+		this.element.children().filter(":selected").each(function(i,o){ value.push({value: o.value, text: o.text}); });
 		return value;
 	}
    

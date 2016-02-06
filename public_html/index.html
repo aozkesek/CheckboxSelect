@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<!--
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+-->
+<html>
+   <head>
+      <title>TODO supply a title</title>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      
+      <link rel="stylesheet" href="css/checkboxselect.css" />
+		<link rel="stylesheet" href="css/font-awesome.css" />
+		
+      <script type="text/javascript" src="js/jquery.js"></script>
+      <script type="text/javascript" src="js/jqueryui.js"></script>
+      <script type="text/javascript" src="js/checkboxselect.js"></script>
+      
+   </head>
+   <body>
+      
+		<div >
+			
+      <select id="cbs">
+         
+         <option value="0">ZERO</option>
+         <option value="1">ONE</option>
+         <option value="2">TWO</option>
+         <option value="3">THREE</option>
+         <option value="4">FOUR</option>
+         <option value="5">FIVE</option>
+   
+      </select>
+			
+		</div>
+      
+      <script type="text/javascript">
+         var _data = [
+					{value:1, text:"bir"}, 
+					{value:2, text:"iki"}, 
+					{value:3, text:"uc"}, 
+					{value:4, text:"dort", selected:true}
+					],
+				_cbs = $("#cbs").checkboxselect(
+//				{data:_data}
+			  );
+			
+//			_cbs.checkboxselect("addOption", {text: "ten", value:10, selected:true});
+//			_cbs.checkboxselect("addOption", {text: "eleven", value:11, selected:true});
+//			_cbs.checkboxselect("addOption", {text: "twelve", value:12, selected:true});
+//			_cbs.checkboxselect("addOption", {text: "13", value:13, selected:true});
+//			_cbs.checkboxselect("addOption", {text: "14", value:14, selected:true});
+//			_cbs.checkboxselect("addOption", {text: "15", value:15, selected:true});
+//			_cbs.checkboxselect("addOption", {text: "16", value:16, selected:true});
+//			_cbs.checkboxselect("addOption", {text: "17", value:17, selected:true});
+//			_cbs.checkboxselect("addOption", {text: "18", value:18, selected:true});
+//			_cbs.checkboxselect("addOption", {text: "19", value:19, selected:true});
+//			
+//			_cbs.checkboxselect("removeOption", 12);
+			
+   
+      </script>
+         
+   </body>
+</html>

@@ -1,0 +1,56 @@
+
+
+
+.cbs-container {
+	display: inline-block;
+	min-width: 10em;
+	max-width: 20em;
+	
+}
+
+.cbs-label {
+	margin: 5px 0px 5px 5px;
+	border: 1px solid;
+	border-radius: 3px;
+	display: inline-block;
+	min-width: 8em;
+	max-width: 17.6em;
+	max-height: 1.1em;
+	min-height: 1.1em;
+	overflow: hidden;
+	padding: 3px;
+	float: left;
+	text-overflow: ellipsis;
+}
+
+.cbs-dropdown-button {
+	margin: 5px 5px 5px 0px;
+	padding: 3px;
+	float: right;
+}
+
+.cbs-ul-container {
+	margin: 0px 5px 5px 5px;
+	border: 1px;
+	border-color: black;
+	border-radius: 3px;
+	border-style: solid;
+	display: inline-block;
+	min-width: inherit;
+	overflow: scroll;
+	max-height: 10em;
+	float: right;
+	padding-left: 0.5em;
+}
+
+.cbs-item {
+	list-style: none;
+	display: inline-block;
+	min-width: inherit;
+	width: 96%;
+	left: 5px;
+}
+
+.cbs-state-highlight {
+	background-color: highlight;
+}

@@ -1,17 +1,19 @@
 
-
-
 .cbs-container {
 	display: inline-block;
 	min-width: 10em;
 	max-width: 20em;
+	border: 1px solid;
+	border-radius: 3px;
+}
+
+.cbs-text-container {
+	display: inline-block;
+	min-width: 100%;
 	
 }
 
-.cbs-label {
-	margin: 5px 0px 5px 5px;
-	border: 1px solid;
-	border-radius: 3px;
+.cbs-text {
 	display: inline-block;
 	min-width: 8em;
 	max-width: 17.6em;
@@ -23,34 +25,60 @@
 	text-overflow: ellipsis;
 }
 
-.cbs-dropdown-button {
-	margin: 5px 5px 5px 0px;
-	padding: 3px;
-	float: right;
-}
-
-.cbs-ul-container {
-	margin: 0px 5px 5px 5px;
-	border: 1px;
-	border-color: black;
-	border-radius: 3px;
-	border-style: solid;
+.cbs-button {
 	display: inline-block;
-	min-width: inherit;
-	overflow: scroll;
-	max-height: 10em;
-	float: right;
-	padding-left: 0.5em;
+	padding: 5px;
+	cursor: pointer;
+	background-color: #eeeeee;
+	min-width: 16px;
+	min-height: 16px;
 }
 
-.cbs-item {
+.cbs-right {
+	float: right;
+}
+
+.cbs-dropdown-container {
+	display: inline-block;
+	min-width: 100%;
+}
+
+.cbs-tool-container {
+	display: block;
+	background-color: #eeeeee;
+	min-width: 100%;
+}
+
+.cbs-search-container {
+	display: inline-block;
+	border: 1px solid;
+}
+
+.cbs-input {
+	border: 0;
+}
+
+.cbs-list-container {
+	display: inline-block;
+	padding: 0;
+	max-height: 10em;
+	overflow: auto;
+}
+
+.cbs-list {
+	display: inline-block;
+	padding: 0;
+	margin: 0;
+}
+
+.cbs-list-item {
 	list-style: none;
 	display: inline-block;
-	min-width: inherit;
-	width: 96%;
-	left: 5px;
+	min-width: 100%;
+	min-height: 1.3em;
 }
 
 .cbs-state-highlight {
 	background-color: highlight;
+	min-width: 100%;
 }

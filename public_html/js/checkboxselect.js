@@ -41,10 +41,6 @@ $.widget("ui.checkboxselect", {
 		this.textContainer.append(this.texts);
 		this.texts.after(this.dropdownButton);
 		this.textContainer.after(this.dropdownContainer);
-		
-		this.element.after(this.container);
-		
-	
 		this.dropdownContainer.append(this.toolContainer);
 		this.toolContainer.append(this.checkAllButton);
 		this.checkAllButton.after(this.searchContainer);
@@ -52,15 +48,16 @@ $.widget("ui.checkboxselect", {
 		this.searchIcon.after(this.searchInput);
 		this.searchInput.after(this.searchCancel);				  
 		this.searchContainer.after(this.orderButton);
-
-		this.dropdownContainer.after(this.listContainer);
+		this.toolContainer.after(this.listContainer);
 		this.listContainer.append(this.list);
 		
+		this.element.after(this.container);
+		
 		this.dropdownButton.bind("click", function() {
-			if (_this.ul.is(":visible"))
-				_this.ulContainer.hide();
+			if (_this.dropdownContainer.is(":visible"))
+				_this.dropdownContainer.hide();
 			else
-				_this.ulContainer.show();
+				_this.dropdownContainer.show();
 		});
 //		this.selectbutton.bind("click", function() {
 //			_this.ulListItems.children().prop("checked", $(this).prop("checked"));

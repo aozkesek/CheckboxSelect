@@ -22,7 +22,9 @@ $.widget("ui.checkboxselect", {
 	list: $("<ul class='cbs-list'></ul>"),
 	
    options: {
-      data: undefined
+      data: undefined,
+		order: undefined, //0: ascending, 1:descending
+		search: true
    },
    
    _create: function() {
@@ -35,7 +37,7 @@ $.widget("ui.checkboxselect", {
          this.element.prop("multiple", true);
       
       this.element.hide();
-		this.dropdownContainer.hide();
+		this.dropdownContainer.hide();  
 
 		//container
 		this.container.append(this.textContainer);
@@ -57,8 +59,13 @@ $.widget("ui.checkboxselect", {
 		this.searchIcon.after(this.searchInput);
 		this.searchInput.after(this.searchCancel);				  
 		
+		if (!this.options.search )
+			this.searchContainer.hide();
+	
 		//order
 		this.searchContainer.after(this.orderButton);
+		if (this.options.order !== 0 && this.options.order !== 1)
+			this.orderButton.hide();
 		
 		//list items and it's checkboxes
 		this.toolContainer.after(this.listContainer);
@@ -66,18 +73,61 @@ $.widget("ui.checkboxselect", {
 		
 		this.element.after(this.container);
 		
-		this.dropdownButton.click(function(){_this.dropdownContainer.toggle()});
+		this.dropdownButton.click(function(){_this._toggleDropdown()});
 		
 		this.checkAllButton.click(function(){_this._toggleCheckAll()});
 		
 		this.searchInput.change(function(){_this._applyFilter()});
+		this.searchCancel.click(function(){ _this.searchInput.val(""); _this._applyFilter()});
+		
+		this.orderButton.click(function(){_this._toggleOrder();});
 		
 		this.setData(this.options.data);
 		      
    },
    
+	_compareItem: function(a,b) {
+		return $(a).text().localeCompare($(b).text());
+	},
+	
+	_toggleOrder: function() {
+		
+		if (this.orderButton.is(".fa-sort"))
+			this.orderButton.removeClass("fa-sort");
+		
+		if (this.options.order === 1) {
+			this.options.order = 0;
+			this.orderButton.addClass("fa-sort-asc").removeClass("fa-sort-desc");
+		}
+		else {
+			this.options.order = 1;
+			this.orderButton.addClass("fa-sort-desc").removeClass("fa-sort-asc");
+		}
+		
+		this._applyOrder();
+	},
+	
+	_applyOrder: function() {
+		var _items = this.list.children();
+		
+		if (!(this.options.order === 0 || this.options.order === 1))
+			return;
+		
+		_items.sort(this._compareItem);
+		
+		if (this.options.order === 1)
+			_items = _items.toArray().reverse();
+
+		this.list.children().remove();
+		this.list.append(_items);
+	},
+	
 	_applyFilter: function() {
 		var text = this.searchInput.val();
+
+		if (this.checkAllButton.is(".fa-check"))
+			this._toggleCheck(this.checkAllButton);
+		
 		this.list.children()
 				  .each(function(i,li){
 						li = $(li);
@@ -88,15 +138,39 @@ $.widget("ui.checkboxselect", {
 					});
 	},
 	
+	_toggleDropdown: function() {
+		//clear filter first
+		this.searchInput.val("");
+		this._applyFilter();
+		
+		this.dropdownContainer.toggle();
+	},
+	
 	_toggleCheckAll: function() {
-		var _this = this;
+		var _this = this,
+			_items = this.element.children();
+		
+		//reset first 
+		_items.attr("selected", false);
 		this._toggleCheck(this.checkAllButton);
+		
 		this.list.children().each(function() { 
-			var _icon = $(this).children();
+			var __this = $(this),
+				_icon = __this.children();
+
+			if (!__this.is(":visible")) {
+				if (_icon.is(".fa-check"))
+					_this._toggleCheck(_icon); 
+				return;				
+			}
+			
 			if (_icon.attr("class") !== _this.checkAllButton.attr("class"))
 				_this._toggleCheck(_icon); 
+		
+			if (_icon.is(".fa-check"))
+				_items.filter("[value='"+__this.attr("cbs-value")+"']").attr("selected", true);
 		});
-		this.element.children().prop("selected", this.checkAllButton.is(".fa-check"));
+		
 		this._setLabel();
 	},
 	
@@ -141,7 +215,7 @@ $.widget("ui.checkboxselect", {
 		listItems.bind("click", function(event){ 
 			//prevent from child icon element's click
 			if (event.target === this) {
-				//just call child icon click, it is alredy doing
+				//just call child icon click
 				$(this).children().trigger("click");
 				_this.dropdownContainer.hide();
 			}
@@ -157,7 +231,7 @@ $.widget("ui.checkboxselect", {
 			_this.element
 					  .children()
 					  .filter("[value="+value+"]")
-					  .prop("selected", __this.is(".fa-check"));
+					  .attr("selected", __this.is(".fa-check"));
 			
 			_this._setLabel();
 		}); 
@@ -175,10 +249,12 @@ $.widget("ui.checkboxselect", {
       this.list.append("<li class='cbs-list-item' cbs-value='"+_option.value+"'><i class='cbs-button fa "+(_option.selected?"fa-check":"fa-square-o")+"'></i>"+_option.text+"</li>");
 		this._bind(this.list.children().filter("[cbs-value='"+_option.value+"']"));
 		this._setLabel();
+		this._applyOrder();
 	},
 	
 	setData: function(data) {
-		var _this = this;
+		var _this = this,
+			_items = [];
 		
 		switch(typeof data) {
 			case "object":
@@ -195,11 +271,19 @@ $.widget("ui.checkboxselect", {
 		}
 		
       this.list.children().remove();
+		
 		this.element.children().each(function(i,o){
 			o = $(o);
-         _this.list.append("<li class='cbs-list-item' cbs-value='"+o.val()+"'><i class='cbs-button fa "+(o.prop("selected")?"fa-check":"fa-square-o")+"'></i>"+o.text()+"</li>");
+         _items.push("<li class='cbs-list-item' cbs-value='"+o.val()+"'><i class='cbs-button fa "+(o.prop("selected")?"fa-check":"fa-square-o")+"'></i>"+o.text()+"</li>");
       });
       
+		if (this.options.order === 1 || this.options.order === 0) {
+			_items.sort(this._compareItem);
+			if (this.options.order === 1)
+				_items.reverse();
+		}
+		
+		this.list.append(_items);	
       this._bind(this.list.children());
 		this._setLabel();
       

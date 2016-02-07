@@ -38,6 +38,10 @@
 	float: right;
 }
 
+.cbs-cursor-none {
+	cursor: none;
+}
+
 .cbs-dropdown-container {
 	display: inline-block;
 	min-width: 100%;
@@ -51,7 +55,6 @@
 
 .cbs-search-container {
 	display: inline-block;
-	border: 1px solid;
 }
 
 .cbs-input {

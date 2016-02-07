@@ -1,9 +1,4 @@
-/* 
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
-        
+  
 $.widget("ui.checkboxselect", {
 	
 	container: $("<div class='cbs-container'></div>"),
@@ -31,7 +26,7 @@ $.widget("ui.checkboxselect", {
       var _this = this;
       
       if (this.element.context.nodeName !== 'SELECT')
-         throw "Creating a checkboxselect object needs an <select> element, but <" +this.element.context.nodeName+ "> found.";
+         throw "Creating a checkboxselect object needs a <select> element, but <" +this.element.context.nodeName+ "> found.";
       
       if (!this.element.prop("multiple"))
          this.element.prop("multiple", true);
@@ -186,6 +181,8 @@ $.widget("ui.checkboxselect", {
 	},
 	
    _destroy: function() {
+		
+		this.container.remove();
 		
       this.element.show();
    },

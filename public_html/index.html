@@ -21,20 +21,29 @@ and open the template in the editor.
    <body>
       
 		<div >
-			
-      <select id="cbs">
-         
-         <option value="0">ZERO</option>
-         <option value="1">ONE</option>
-         <option value="2">TWO</option>
-         <option value="3">THREE</option>
-         <option value="4">FOUR</option>
-         <option value="5">FIVE</option>
-   
-      </select>
+
+			<select id="cbs">
+
+				<option value="0">ZERO</option>
+				<option value="1">ONE</option>
+				<option value="2">TWO</option>
+				<option value="3">THREE</option>
+				<option value="4">FOUR</option>
+				<option value="5">FIVE</option>
+
+			</select>
+
+			<input type="text" />
 			
 		</div>
-      
+
+		<div>
+			<label>hop</label>
+			<input type="datetime-local"/>
+			
+			
+		</div>
+		
       <script type="text/javascript">
          var _data = [
 					{value:1, text:"bir"}, 
@@ -43,21 +52,23 @@ and open the template in the editor.
 					{value:4, text:"dort", selected:true}
 					],
 				_cbs = $("#cbs").checkboxselect(
-					{data:_data, search: true, order:1}
+//					{data:_data}
+//					{search: true}
+					{order:1}
 					);
 			
-			_cbs.checkboxselect("addOption", {text: "ten", value:10, selected:true});
-			_cbs.checkboxselect("addOption", {text: "eleven", value:11, selected:true});
-			_cbs.checkboxselect("addOption", {text: "twelve", value:12, selected:true});
-			_cbs.checkboxselect("addOption", {text: "13", value:13, selected:true});
-			_cbs.checkboxselect("addOption", {text: "14", value:14, selected:true});
-			_cbs.checkboxselect("addOption", {text: "15", value:15, selected:true});
-			_cbs.checkboxselect("addOption", {text: "16", value:16, selected:true});
-			_cbs.checkboxselect("addOption", {text: "17", value:17, selected:true});
-			_cbs.checkboxselect("addOption", {text: "18", value:18, selected:true});
-			_cbs.checkboxselect("addOption", {text: "19", value:19, selected:true});
-			
-			_cbs.checkboxselect("removeOption", 12);
+//			_cbs.checkboxselect("addItem", {text: "ten", value:10, selected:true});
+//			_cbs.checkboxselect("addItem", {text: "eleven", value:11, selected:true});
+//			_cbs.checkboxselect("addItem", {text: "twelve", value:12, selected:true});
+//			_cbs.checkboxselect("addItem", {text: "13", value:13, selected:true});
+//			_cbs.checkboxselect("addItem", {text: "14", value:14, selected:true});
+//			_cbs.checkboxselect("addItem", {text: "15", value:15, selected:true});
+//			_cbs.checkboxselect("addItem", {text: "16", value:16, selected:true});
+//			_cbs.checkboxselect("addItem", {text: "17", value:17, selected:true});
+//			_cbs.checkboxselect("addItem", {text: "18", value:18, selected:true});
+//			_cbs.checkboxselect("addItem", {text: "19", value:19, selected:true});
+//			
+//			_cbs.checkboxselect("removeItem", 12);
 			
    
       </script>

@@ -1,11 +1,10 @@
   
 $.widget("ui.checkboxselect", {
-	
-	container: $("<div class='cbs-container'></div>"),
+	hidden: "ui-helper-hidden-accessible",
 	textContainer: $("<div class='cbs-text-container'></div>"),
 	texts: $("<label class='cbs-text'></label>"),
 	dropdownButton: $("<i class='cbs-button cbs-right fa fa-caret-down'></i>"),
-	dropdownContainer: $("<div class='cbs-dropdown-container'></div>"),
+	dropdownContainer: $("<div class='cbs-dropdown-container ui-helper-hidden-accessible'></div>"),
 	toolContainer: $("<div class='cbs-tool-container'></div>"),
 	checkAllButton: $("<i class='cbs-button fa fa-square-o'></i>"),
 	searchContainer: $("<div class='cbs-search-container'></div>"),
@@ -14,7 +13,7 @@ $.widget("ui.checkboxselect", {
 	searchCancel: $("<i class='cbs-button fa fa-times'></i>"),
 	orderButton: $("<i class='cbs-button cbs-right fa fa-sort'></i>"),
 	listContainer: $("<div class='cbs-list-container'></div>"),
-	list: $("<ul class='cbs-list'></ul>"),
+	list: $("<ol class='cbs-list'></ol>"),
 	
    options: {
       data: undefined,
@@ -31,17 +30,14 @@ $.widget("ui.checkboxselect", {
       if (!this.element.prop("multiple"))
          this.element.prop("multiple", true);
       
-      this.element.hide();
-		this.dropdownContainer.hide();  
-
-		//container
-		this.container.append(this.textContainer);
+      this.element.hide();  
 		
 		//selected texts and dropdown control
 		this.textContainer.append(this.texts);
 		this.texts.after(this.dropdownButton);
+		this.element.after(this.textContainer);
 		
-		this.textContainer.after(this.dropdownContainer);
+		this.dropdownContainer.appendTo("body");
 		this.dropdownContainer.append(this.toolContainer);
 		
 		//check/uncheck all, search and order toolbar
@@ -66,14 +62,14 @@ $.widget("ui.checkboxselect", {
 		this.toolContainer.after(this.listContainer);
 		this.listContainer.append(this.list);
 		
-		this.element.after(this.container);
+		this.dropdownContainer.position({my: "left top",at: "left bottom",of: this.textContainer});
+			
+		this.dropdownButton.click(function(){_this._toggleDropdown();});
 		
-		this.dropdownButton.click(function(){_this._toggleDropdown()});
+		this.checkAllButton.click(function(){_this._toggleCheckAll();});
 		
-		this.checkAllButton.click(function(){_this._toggleCheckAll()});
-		
-		this.searchInput.change(function(){_this._applyFilter()});
-		this.searchCancel.click(function(){ _this.searchInput.val(""); _this._applyFilter()});
+		this.searchInput.change(function(){_this._applyFilter();});
+		this.searchCancel.click(function(){ _this.searchInput.val(""); _this._applyFilter();});
 		
 		this.orderButton.click(function(){_this._toggleOrder();});
 		
@@ -118,7 +114,8 @@ $.widget("ui.checkboxselect", {
 	},
 	
 	_applyFilter: function() {
-		var text = this.searchInput.val();
+		var text = this.searchInput.val(),
+				  _this = this;
 
 		if (this.checkAllButton.is(".fa-check"))
 			this._toggleCheck(this.checkAllButton);
@@ -127,43 +124,39 @@ $.widget("ui.checkboxselect", {
 				  .each(function(i,li){
 						li = $(li);
 						if (li.text().indexOf(text) > -1)
-							li.show();
+							li.removeClass(_this.hidden);
 						else
-							li.hide();
+							li.addClass(_this.hidden);
 					});
 	},
 	
 	_toggleDropdown: function() {
 		//clear filter first
-		this.searchInput.val("");
-		this._applyFilter();
-		
-		this.dropdownContainer.toggle();
+		if (this.dropdownContainer.is("."+this.hidden)) {
+			this.searchInput.val("");
+			this._applyFilter();
+		}
+			
+		this.dropdownContainer.toggleClass(this.hidden);
 	},
 	
 	_toggleCheckAll: function() {
 		var _this = this,
 			_items = this.element.children();
-		
-		//reset first 
-		_items.attr("selected", false);
+
 		this._toggleCheck(this.checkAllButton);
 		
 		this.list.children().each(function() { 
 			var __this = $(this),
 				_icon = __this.children();
 
-			if (!__this.is(":visible")) {
-				if (_icon.is(".fa-check"))
-					_this._toggleCheck(_icon); 
+			if (__this.is("."+_this.hidden))
 				return;				
-			}
 			
 			if (_icon.attr("class") !== _this.checkAllButton.attr("class"))
 				_this._toggleCheck(_icon); 
 		
-			if (_icon.is(".fa-check"))
-				_items.filter("[value='"+__this.attr("cbs-value")+"']").attr("selected", true);
+			_items.filter("[value='"+__this.attr("cbs-value")+"']").attr("selected", _icon.is(".fa-check"));
 		});
 		
 		this._setLabel();
@@ -182,7 +175,8 @@ $.widget("ui.checkboxselect", {
 	
    _destroy: function() {
 		
-		this.container.remove();
+		this.dropdownContainer.remove();
+		this.textContainer.remove();
 		
       this.element.show();
    },
@@ -205,21 +199,21 @@ $.widget("ui.checkboxselect", {
 	_bind: function(listItems) {
 		var _this = this;
 		
-		listItems.bind("mouseenter mouseleave", function(){ 
+		listItems.on("mouseenter mouseleave", function(){ 
          $(this).toggleClass("cbs-state-highlight"); 
       });
       
-		listItems.bind("click", function(event){ 
+		listItems.click(function(event){ 
 			//prevent from child icon element's click
 			if (event.target === this) {
 				//just call child icon click
 				$(this).children().trigger("click");
-				_this.dropdownContainer.hide();
+				_this.dropdownContainer.toggleClass(_this.hidden);
 			}
 			
       });
 		
-		listItems.children("i").bind("click", function(event){
+		listItems.children("i").click(function(event){
 			var __this = $(this),
 				value = this.parentElement.attributes["cbs-value"].value;
 			
@@ -241,7 +235,7 @@ $.widget("ui.checkboxselect", {
 	 *		selected: 
 	 *		}  
 	 */
-	addOption: function(option) {
+	addItem: function(option) {
 		var _option = this._addOption(option);
       this.list.append("<li class='cbs-list-item' cbs-value='"+_option.value+"'><i class='cbs-button fa "+(_option.selected?"fa-check":"fa-square-o")+"'></i>"+_option.text+"</li>");
 		this._bind(this.list.children().filter("[cbs-value='"+_option.value+"']"));
@@ -286,7 +280,7 @@ $.widget("ui.checkboxselect", {
       
 	},
 	
-	removeOption: function(value) {
+	removeItem: function(value) {
 		this.element.children().filter("[value="+value+"]").remove();
 		this.list.children().filter("[cbs-value='"+value+"']").remove();
 		this._setLabel();
@@ -304,7 +298,7 @@ $.widget("ui.checkboxselect", {
 	
 	getValue: function() {
 		var value = [];
-		this.element.children().filter(":selected").each(function(i,o){ value.push(o.value)});
+		this.element.children().filter(":selected").each(function(i,o){ value.push(o.value);});
 		return value;
 	},
 	

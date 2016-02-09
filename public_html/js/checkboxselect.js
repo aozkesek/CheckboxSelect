@@ -8,7 +8,7 @@ $.widget("ui.checkboxselect", {
 	toolContainer: $("<div class='cbs-tool-container'></div>"),
 	checkAllButton: $("<i class='cbs-button fa fa-square-o'></i>"),
 	searchContainer: $("<div class='cbs-search-container'></div>"),
-	searchIcon: $("<i class='cbs-button fa fa-search'></i>"),
+	searchIcon: $("<i class='cbs-button ui-state-disabled fa fa-search'></i>"),
 	searchInput: $("<input class='cbs-input' type='text'></input>"),
 	searchCancel: $("<i class='cbs-button fa fa-times'></i>"),
 	orderButton: $("<i class='cbs-button cbs-right fa fa-sort'></i>"),

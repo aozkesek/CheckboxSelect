@@ -196,6 +196,19 @@ $.widget("ui.checkboxselect", {
 				  .addClass("fa-square-o");
 	},
 	
+	_listIconClick: function(__this) {
+			var value = __this.parent().attr("cbs-value");
+			this._toggleCheck(__this);
+			
+			this.element
+					  .children()
+					  .filter("[value="+value+"]")
+					  .attr("selected", __this.is(".fa-check"));
+			
+			this._setLabel();
+		
+	},
+	
 	_bind: function(listItems) {
 		var _this = this;
 		
@@ -206,26 +219,12 @@ $.widget("ui.checkboxselect", {
 		listItems.click(function(event){ 
 			//prevent from child icon element's click
 			if (event.target === this) {
-				//just call child icon click
-				$(this).children().trigger("click");
+				_this._listIconClick($(this).children());
 				_this.dropdownContainer.toggleClass(_this.hidden);
 			}
-			
       });
 		
-		listItems.children("i").click(function(event){
-			var __this = $(this),
-				value = this.parentElement.attributes["cbs-value"].value;
-			
-			_this._toggleCheck(__this);
-			
-			_this.element
-					  .children()
-					  .filter("[value="+value+"]")
-					  .attr("selected", __this.is(".fa-check"));
-			
-			_this._setLabel();
-		}); 
+		listItems.children("i").click(function(){ _this._listIconClick($(this));}); 
 	},
 	
 	/*

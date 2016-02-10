@@ -1,19 +1,19 @@
   
 $.widget("ui.checkboxselect", {
 	hidden: "ui-helper-hidden-accessible",
-	textContainer: $("<div class='cbs-text-container'></div>"),
-	texts: $("<label class='cbs-text'></label>"),
-	dropdownButton: $("<i class='cbs-button cbs-right fa fa-caret-down'></i>"),
-	dropdownContainer: $("<div class='cbs-dropdown-container ui-helper-hidden-accessible'></div>"),
-	toolContainer: $("<div class='cbs-tool-container'></div>"),
-	checkAllButton: $("<i class='cbs-button fa fa-square-o'></i>"),
-	searchContainer: $("<div class='cbs-search-container'></div>"),
-	searchIcon: $("<i class='cbs-button ui-state-disabled fa fa-search'></i>"),
-	searchInput: $("<input class='cbs-input' type='text'></input>"),
-	searchCancel: $("<i class='cbs-button fa fa-times'></i>"),
-	orderButton: $("<i class='cbs-button cbs-right fa fa-sort'></i>"),
-	listContainer: $("<div class='cbs-list-container'></div>"),
-	list: $("<ol class='cbs-list'></ol>"),
+	textContainer: "<div class='cbs-text-container' id='%%-textbox-container'></div>",
+	texts: "<label class='cbs-text' id='%%-texts'></label>",
+	dropdownButton: "<i class='cbs-button cbs-right fa fa-caret-down' id='%%-dropdown-button'></i>",
+	dropdownContainer: "<div class='cbs-dropdown-container ui-helper-hidden-accessible' id='%%-dropdown-container'></div>",
+	toolContainer: "<div class='cbs-tool-container' id='%%-tool-container'></div>",
+	checkAllButton: "<i class='cbs-button fa fa-square-o' id='%%-check-all-button'></i>",
+	searchContainer: "<div class='cbs-search-container' id='%%-search-container'></div>",
+	searchIcon: "<i class='cbs-button ui-state-disabled fa fa-search' id='%%-search-icon'></i>",
+	searchInput: "<input class='cbs-input' type='text' id='%%-search-input'></input>",
+	searchCancelButton: "<i class='cbs-button fa fa-times' id='%%-search-cancel-button'></i>",
+	orderButton: "<i class='cbs-button cbs-right fa fa-sort' id='%%-order-button'></i>",
+	listContainer: "<div class='cbs-list-container' id='%%-list-container'></div>",
+	list: "<ol class='cbs-list' id='%%-list'></ol>",
 	
    options: {
       data: undefined,
@@ -32,11 +32,13 @@ $.widget("ui.checkboxselect", {
       
       this.element.hide();  
 		
+		this._initIds();
+		
 		//selected texts and dropdown control
 		this.textContainer.append(this.texts);
 		this.texts.after(this.dropdownButton);
 		this.element.after(this.textContainer);
-		
+				
 		this.dropdownContainer.appendTo("body");
 		this.dropdownContainer.append(this.toolContainer);
 		
@@ -48,7 +50,7 @@ $.widget("ui.checkboxselect", {
 		this.checkAllButton.after(this.searchContainer);
 		this.searchContainer.append(this.searchIcon);
 		this.searchIcon.after(this.searchInput);
-		this.searchInput.after(this.searchCancel);				  
+		this.searchInput.after(this.searchCancelButton);				  
 		
 		if (!this.options.search )
 			this.searchContainer.hide();
@@ -69,14 +71,34 @@ $.widget("ui.checkboxselect", {
 		this.checkAllButton.click(function(){_this._toggleCheckAll();});
 		
 		this.searchInput.change(function(){_this._applyFilter();});
-		this.searchCancel.click(function(){ _this.searchInput.val(""); _this._applyFilter();});
+		this.searchCancelButton.click(function(){ _this.searchInput.val(""); _this._applyFilter();});
 		
 		this.orderButton.click(function(){_this._toggleOrder();});
 		
 		this.setData(this.options.data);
 		      
    },
-   
+
+	_initIds: function() {
+		var _thisId = this.element.attr("id");
+		
+		this.textContainer = $(this.textContainer.replace("%%", _thisId));
+		this.texts = $(this.texts.replace("%%", _thisId));
+		this.dropdownButton = $(this.dropdownButton.replace("%%", _thisId));
+		this.dropdownContainer = $(this.dropdownContainer.replace("%%", _thisId));
+		this.toolContainer = $(this.toolContainer.replace("%%", _thisId));
+		this.checkAllButton = $(this.checkAllButton.replace("%%", _thisId));
+		this.searchContainer = $(this.searchContainer.replace("%%", _thisId));
+		this.searchIcon = $(this.searchIcon.replace("%%", _thisId));
+		this.searchInput = $(this.searchInput.replace("%%", _thisId));
+		this.searchCancelButton = $(this.searchCancelButton.replace("%%", _thisId));
+		this.orderButton = $(this.orderButton.replace("%%", _thisId));
+		this.listContainer = $(this.listContainer.replace("%%", _thisId));
+		this.list = $(this.list.replace("%%", _thisId));
+		
+	
+	},
+	
 	_compareItem: function(a,b) {
 		return $(a).text().localeCompare($(b).text());
 	},
@@ -162,13 +184,14 @@ $.widget("ui.checkboxselect", {
 		this._setLabel();
 	},
 	
-	_addOption: function(option) {
+	_addOption: function(option, _this) {
 		var _isObject = typeof option === "object",
 			_value = _isObject ? (option.value !== undefined ? option.value : null) : option,
 			_text = _isObject ? (option.text !== undefined ? option.text : "&nbsp;") : option,
-			_isSelected = _isObject ? (option.selected !== undefined ? option.selected : false) : false;
+			_isSelected = _isObject ? (option.selected !== undefined ? option.selected : false) : false,
+			_this = _this !== undefined && _this !== null ? _this : this;
 		
-		this.element.append('<option value="'+_value+'" '+(_isSelected ? 'selected>' : '>')+_text+'</option>');
+		_this.element.append('<option value="'+_value+'" '+(_isSelected ? 'selected>' : '>')+_text+'</option>');
 		
 		return {value: _value, text: _text, selected: _isSelected};
 	},
@@ -227,40 +250,10 @@ $.widget("ui.checkboxselect", {
 		listItems.children("i").click(function(){ _this._listIconClick($(this));}); 
 	},
 	
-	/*
-	 * option: {
-	 *		value: , 
-	 *		label: ,
-	 *		selected: 
-	 *		}  
-	 */
-	addItem: function(option) {
-		var _option = this._addOption(option);
-      this.list.append("<li class='cbs-list-item' cbs-value='"+_option.value+"'><i class='cbs-button fa "+(_option.selected?"fa-check":"fa-square-o")+"'></i>"+_option.text+"</li>");
-		this._bind(this.list.children().filter("[cbs-value='"+_option.value+"']"));
-		this._setLabel();
-		this._applyOrder();
-	},
-	
-	setData: function(data) {
-		var _this = this,
-			_items = [];
+	_refreshList: function() {
+		var _items = [];
 		
-		switch(typeof data) {
-			case "object":
-				this.element.children("option").remove();
-				if (data.length !== undefined)
-					data.forEach(function(o){ _this._addOption(o); });
-				break;
-				
-			case "function":
-				break;
-		
-			case "undefined":
-				break;
-		}
-		
-      this.list.children().remove();
+		this.list.children().remove();
 		
 		this.element.children().each(function(i,o){
 			o = $(o);
@@ -277,6 +270,74 @@ $.widget("ui.checkboxselect", {
       this._bind(this.list.children());
 		this._setLabel();
       
+	},
+	
+	/*
+	 * option: {
+	 *		value: , 
+	 *		label: ,
+	 *		selected: 
+	 *		}  
+	 */
+	addItem: function(option) {
+		var _option = this._addOption(option);
+      this.list.append("<li class='cbs-list-item' cbs-value='"+_option.value+"'><i class='cbs-button fa "+(_option.selected?"fa-check":"fa-square-o")+"'></i>"+_option.text+"</li>");
+		this._bind(this.list.children().filter("[cbs-value='"+_option.value+"']"));
+		this._setLabel();
+		this._applyOrder();
+	},
+	
+	/*
+	 * data : 
+	 *		array of {value, text}
+	 *		function (callback, this) { ... callback( {value, text}, this); ... }
+	 *		ajax 
+	 */
+	setData: function(data) {
+		var _this = this,
+			_lazy = false;
+		
+		switch(typeof data) {
+			case "object":
+				this.element.children("option").remove();
+				if (data.length !== undefined)
+					data.forEach(function(o){ _this._addOption(o); });
+				else if (data.url !== undefined && data.url !== null) {
+					if (data.success !== undefined && data.success !== null) {
+						//save orginal success callback,
+						var _successCallback = data.success;
+						data.success = function(response) {
+							//orginal success callback must return {value,text} data array
+							response = _successCallback(response);
+							response.forEach(function(o) {_this._addOption(o, _this);});
+							_this._refreshList();
+						}
+					}
+					else {
+						data.success = function(response) {
+							response.forEach(function(o) {_this._addOption(o, _this);});
+							_this._refreshList();
+						}
+					}
+					//update context with this object, ignore whatever assigned is before
+					data.context = _this;
+					_lazy = true;
+					$.ajax(data);
+				}
+				break;
+				
+			case "function":
+				this.element.children("option").remove();
+				data( _this._addOption, _this );
+				break;
+		
+			case "undefined":
+				break;
+		}
+		
+		if(!_lazy)
+			this._refreshList();
+		
 	},
 	
 	removeItem: function(value) {

@@ -22,27 +22,38 @@ and open the template in the editor.
    <body>
       
 		<div >
-
-			<select id="cbs">
-
+			<select id="cbs1">
 				<option value="0">ZERO</option>
 				<option value="1">ONE</option>
 				<option value="2">TWO</option>
 				<option value="3">THREE</option>
 				<option value="4">FOUR</option>
 				<option value="5">FIVE</option>
-
 			</select>
-
 			<input type="text" />
-			
+		</div>
+
+		<div >
+			<select id="cbs2">
+			</select>
+			<input type="text" />
+		</div>
+
+		<div >
+			<select id="cbs3">
+			</select>
+			<input type="text" />
+		</div>
+
+		<div >
+			<select id="cbs4">
+			</select>
+			<input type="text" />
 		</div>
 
 		<div>
 			<label>hop</label>
 			<input type="datetime-local"/>
-			
-			
 		</div>
 		
       <script type="text/javascript">
@@ -51,13 +62,30 @@ and open the template in the editor.
 					{value:2, text:"iki"}, 
 					{value:3, text:"uc"}, 
 					{value:4, text:"dort", selected:true}
-					],
-				_cbs = $("#cbs").checkboxselect(
-//					{data:_data}
-//					{search: true}
-					{order:1}
-					);
+					];
+					
+				$("#cbs1").checkboxselect();
+				
+				$("#cbs2").checkboxselect({data:_data});
+				
+				$("#cbs3").checkboxselect({
+					data: function(fn, _this) { 
+							var i = 0, 
+								d = [{value: 5, text: "five"},{value: 6, text: "six", selected: true},{value: 7, text: "seven"}]; 
+							for(i = 0; i < 3; i++)
+								fn(d[i], _this);
+						}, 
+					order:1
+				});
 			
+				$("#cbs4").checkboxselect({
+					data: {
+						url: "http://localhost:8080",
+						success: function(response) { return response; }
+					}, 
+					order:1
+				});
+					
 //			_cbs.checkboxselect("addItem", {text: "ten", value:10, selected:true});
 //			_cbs.checkboxselect("addItem", {text: "eleven", value:11, selected:true});
 //			_cbs.checkboxselect("addItem", {text: "twelve", value:12, selected:true});

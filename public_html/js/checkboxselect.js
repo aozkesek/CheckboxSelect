@@ -250,7 +250,7 @@ $.widget("ui.checkboxselect", {
 		listItems.children("i").click(function(){ _this._listIconClick($(this));}); 
 	},
 	
-	_refreshList: function() {
+	_rebuildList: function() {
 		var _items = [];
 		
 		this.list.children().remove();
@@ -270,6 +270,31 @@ $.widget("ui.checkboxselect", {
       this._bind(this.list.children());
 		this._setLabel();
       
+	},
+	
+	_setAjaxData: function(data) {
+		var _this = this;
+		
+		if (data.success !== undefined && data.success !== null) {
+			//save orginal success callback,
+			var _successCallback = data.success;
+			data.success = function(response) {
+				//orginal success callback must return {value,text} data array
+				response = _successCallback(response);
+				response.forEach(function(o) {_this._addOption(o, _this);});
+				_this._rebuildList();
+			}
+		}
+		else {
+			data.success = function(response) {
+				response.forEach(function(o) {_this._addOption(o, _this);});
+				_this._rebuildList();
+			}
+		}
+		//update context with this object, ignore whatever assigned is before
+		data.context = _this;
+		_lazy = true;
+		$.ajax(data);	
 	},
 	
 	/*
@@ -302,28 +327,8 @@ $.widget("ui.checkboxselect", {
 				this.element.children("option").remove();
 				if (data.length !== undefined)
 					data.forEach(function(o){ _this._addOption(o); });
-				else if (data.url !== undefined && data.url !== null) {
-					if (data.success !== undefined && data.success !== null) {
-						//save orginal success callback,
-						var _successCallback = data.success;
-						data.success = function(response) {
-							//orginal success callback must return {value,text} data array
-							response = _successCallback(response);
-							response.forEach(function(o) {_this._addOption(o, _this);});
-							_this._refreshList();
-						}
-					}
-					else {
-						data.success = function(response) {
-							response.forEach(function(o) {_this._addOption(o, _this);});
-							_this._refreshList();
-						}
-					}
-					//update context with this object, ignore whatever assigned is before
-					data.context = _this;
-					_lazy = true;
-					$.ajax(data);
-				}
+				else if (data.url !== undefined && data.url !== null)
+					_this._setAjaxData(data);
 				break;
 				
 			case "function":
@@ -336,7 +341,7 @@ $.widget("ui.checkboxselect", {
 		}
 		
 		if(!_lazy)
-			this._refreshList();
+			this._rebuildList();
 		
 	},
 	

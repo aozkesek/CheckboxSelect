@@ -68,12 +68,14 @@ $.widget("ui.checkboxselect", {
 			
 		this.dropdownButton.click(function(){_this._toggleDropdown();});
 		
-		this.checkAllButton.click(function(){_this._toggleCheckAll();});
-		
-		this.searchInput.change(function(){_this._applyFilter();});
-		this.searchCancelButton.click(function(){ _this.searchInput.val(""); _this._applyFilter();});
-		
-		this.orderButton.click(function(){_this._toggleOrder();});
+		this.checkAllButton.click(function(){_this._toggleCheckAll(); return false;});
+		this.searchCancelButton.click(function(){ _this.searchInput.val(""); _this._applyFilter(); return false; });
+		this.searchInput.click(function(){return false;});
+		this.searchInput.change(function(){_this._applyFilter();});		
+		this.orderButton.click(function(){_this._toggleOrder();return false;});
+	
+		//close on click event of any other area 
+		this._on(this.document, { click: function(event) {_this._toggleDropdown(event);} });
 		
 		this.setData(this.options.data);
 		      
@@ -152,14 +154,33 @@ $.widget("ui.checkboxselect", {
 					});
 	},
 	
-	_toggleDropdown: function() {
-		//clear filter first
-		if (this.dropdownContainer.is("."+this.hidden)) {
-			this.searchInput.val("");
-			this._applyFilter();
+	_toggleDropdown: function(event) {
+		
+		if (event !== undefined && event.target !== undefined) {
+			//this comes from document 
+			var _id = '',
+				_container = undefined;
+
+			if (this.dropdownButton[0] === event.target)
+				return;
+
+			_id = this.dropdownButton.attr("id").replace("-dropdown-button", "-dropdown-container");
+			_container = $("#"+_id);	
+
+			if (_container.is("."+this.hidden))
+				return;
+
+			_container.toggleClass(this.hidden);
 		}
-			
-		this.dropdownContainer.toggleClass(this.hidden);
+		else {
+			//clear filter first, 
+			if (this.dropdownContainer.is("."+this.hidden)) {
+				this.searchInput.val("");
+				this._applyFilter();
+			}
+
+			this.dropdownContainer.toggleClass(this.hidden);
+		}
 	},
 	
 	_toggleCheckAll: function() {
@@ -247,7 +268,7 @@ $.widget("ui.checkboxselect", {
 			}
       });
 		
-		listItems.children("i").click(function(){ _this._listIconClick($(this));}); 
+		listItems.children("i").click(function(){ _this._listIconClick($(this));return false;}); 
 	},
 	
 	_rebuildList: function() {
@@ -316,7 +337,7 @@ $.widget("ui.checkboxselect", {
 	 * data : 
 	 *		array of {value, text}
 	 *		function (callback, this) { ... callback( {value, text}, this); ... }
-	 *		ajax 
+	 *		ajax settings object
 	 */
 	setData: function(data) {
 		var _this = this,

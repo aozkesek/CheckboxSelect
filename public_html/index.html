@@ -45,8 +45,19 @@ and open the template in the editor.
 			<input type="text" />
 		</div>
 
+		<div>
+			<label>hop</label>
+			<input type="datetime-local"/>
+		</div>
+		
 		<div >
 			<select id="cbs4">
+			</select>
+			<input type="text" />
+		</div>
+
+		<div >
+			<select id="cbs5">
 			</select>
 			<input type="text" />
 		</div>
@@ -86,6 +97,14 @@ and open the template in the editor.
 					order:1
 				});
 					
+			
+				$("#cbs5").checkboxselect({
+					data: {
+						url: "http://localhost:8080"
+					}, 
+					order:1
+				});
+
 //			_cbs.checkboxselect("addItem", {text: "ten", value:10, selected:true});
 //			_cbs.checkboxselect("addItem", {text: "eleven", value:11, selected:true});
 //			_cbs.checkboxselect("addItem", {text: "twelve", value:12, selected:true});

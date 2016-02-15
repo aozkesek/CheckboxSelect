@@ -19,6 +19,7 @@
 	(function($) {
 
 		return $.widget("ui.checkboxselect", {
+			
 				hidden: "ui-helper-hidden-accessible",
 				textContainer: "<div class='cbs-text-container' id='%%-textbox-container'></div>",
 				texts: "<label class='cbs-text' id='%%-texts'></label>",
@@ -154,6 +155,7 @@
 
 					this.list.children().remove();
 					this.list.append(_items);
+					this._bind(this.list.children());
 				},
 
 				_applyFilter: function() {
@@ -319,21 +321,20 @@
 						//save orginal success callback,
 						var _successCallback = data.success;
 						data.success = function(response) {
-							//orginal success callback must return {value,text} data array
-							response = _successCallback(response);
-							response.forEach(function(o) {_this._addOption(o, _this);});
-							_this._rebuildList();
-						}
+												//orginal success callback must return {value,text} data array
+												response = _successCallback(response);
+												response.forEach(function(o) {_this._addOption(o, _this);});
+												_this._rebuildList();
+											};
 					}
 					else {
 						data.success = function(response) {
-							response.forEach(function(o) {_this._addOption(o, _this);});
-							_this._rebuildList();
-						}
+												response.forEach(function(o) {_this._addOption(o, _this);});
+												_this._rebuildList();
+											};
 					}
 					//update context with this object, ignore whatever assigned is before
 					data.context = _this;
-					_lazy = true;
 					$.ajax(data);	
 				},
 
@@ -367,8 +368,10 @@
 							this.element.children("option").remove();
 							if (data.length !== undefined)
 								data.forEach(function(o){ _this._addOption(o); });
-							else if (data.url !== undefined && data.url !== null)
+							else if (data.url !== undefined && data.url !== null) {
+								_lazy = true;
 								_this._setAjaxData(data);
+							}
 							break;
 
 						case "function":
